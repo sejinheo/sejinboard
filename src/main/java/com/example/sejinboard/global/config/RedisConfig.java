@@ -23,11 +23,6 @@ public class RedisConfig {
         config.setHostName(redisProperties.getHost());
         config.setPort(redisProperties.getPort());
 
-        String password = redisProperties.getPassword();
-        if (password != null && !password.isEmpty()) {
-            config.setPassword(password);
-        }
-
         return new LettuceConnectionFactory(config);
     }
 
@@ -36,11 +31,9 @@ public class RedisConfig {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
-        // Key serializer
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
 
-        // Value serializer - using RedisSerializer.json() instead of deprecated GenericJackson2JsonRedisSerializer
         template.setValueSerializer(RedisSerializer.json());
         template.setHashValueSerializer(RedisSerializer.json());
 
