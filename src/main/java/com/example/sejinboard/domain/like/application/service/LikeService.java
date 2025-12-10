@@ -4,11 +4,11 @@ import com.example.sejinboard.domain.comment.domain.Comment;
 import com.example.sejinboard.domain.comment.repository.CommentRepository;
 import com.example.sejinboard.domain.like.application.dto.response.LikeResponse;
 import com.example.sejinboard.domain.like.domain.CommentLike;
-import com.example.sejinboard.domain.like.domain.PostLike;
+import com.example.sejinboard.domain.like.domain.ArticleLike;
 import com.example.sejinboard.domain.like.repository.CommentLikeRepository;
-import com.example.sejinboard.domain.like.repository.PostLikeRepository;
-import com.example.sejinboard.domain.post.domain.Post;
-import com.example.sejinboard.domain.post.repository.PostRepository;
+import com.example.sejinboard.domain.like.repository.ArticleLikeRepository;
+import com.example.sejinboard.domain.article.domain.Article;
+import com.example.sejinboard.domain.article.repository.ArticleRepository;
 import com.example.sejinboard.domain.user.domain.User;
 import com.example.sejinboard.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,33 +20,33 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class LikeService {
 
-    private final PostLikeRepository postLikeRepository;
+    private final ArticleLikeRepository articleLikeRepository;
     private final CommentLikeRepository commentLikeRepository;
-    private final PostRepository postRepository;
+    private final ArticleRepository articleRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
     @Transactional
-    public LikeResponse togglePostLike(Long postId, String userEmail) {
-        Post post = postRepository.findById(postId)
+    public LikeResponse toggleArticleLike(Long articleId, String userEmail) {
+        Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다"));
 
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
 
-        return postLikeRepository.findByPostIdAndUserId(postId, user.getId())
-                .map(postLike -> {
-                    postLikeRepository.delete(postLike);
-                    Long likeCount = postLikeRepository.countByPostId(postId);
+        return articleLikeRepository.findByArticleIdAndUserId(articleId, user.getId())
+                .map(articleLike -> {
+                    articleLikeRepository.delete(articleLike);
+                    Long likeCount = articleLikeRepository.countByArticleId(articleId);
                     return LikeResponse.of(false, likeCount);
                 })
                 .orElseGet(() -> {
-                    PostLike newLike = PostLike.builder()
-                            .post(post)
+                    ArticleLike newLike = ArticleLike.builder()
+                            .article(article)
                             .user(user)
                             .build();
-                    postLikeRepository.save(newLike);
-                    Long likeCount = postLikeRepository.countByPostId(postId);
+                    articleLikeRepository.save(newLike);
+                    Long likeCount = articleLikeRepository.countByArticleId(articleId);
                     return LikeResponse.of(true, likeCount);
                 });
     }
@@ -76,16 +76,16 @@ public class LikeService {
                 });
     }
 
-    public Long getPostLikeCount(Long postId) {
-        return postLikeRepository.countByPostId(postId);
+    public Long getArticleLikeCount(Long articleId) {
+        return articleLikeRepository.countByArticleId(articleId);
     }
 
     public Long getCommentLikeCount(Long commentId) {
         return commentLikeRepository.countByCommentId(commentId);
     }
 
-    public boolean isPostLikedByUser(Long postId, Long userId) {
-        return postLikeRepository.existsByPostIdAndUserId(postId, userId);
+    public boolean isArticleLikedByUser(Long articleId, Long userId) {
+        return articleLikeRepository.existsByArticleIdAndUserId(articleId, userId);
     }
 
     public boolean isCommentLikedByUser(Long commentId, Long userId) {

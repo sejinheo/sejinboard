@@ -5,8 +5,8 @@ import com.example.sejinboard.domain.comment.application.dto.request.UpdateComme
 import com.example.sejinboard.domain.comment.application.dto.response.CommentResponse;
 import com.example.sejinboard.domain.comment.domain.Comment;
 import com.example.sejinboard.domain.comment.repository.CommentRepository;
-import com.example.sejinboard.domain.post.domain.Post;
-import com.example.sejinboard.domain.post.repository.PostRepository;
+import com.example.sejinboard.domain.article.domain.Article;
+import com.example.sejinboard.domain.article.repository.ArticleRepository;
 import com.example.sejinboard.domain.user.domain.User;
 import com.example.sejinboard.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +22,12 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
+    private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
 
     @Transactional
-    public CommentResponse createComment(Long postId, CreateCommentRequest request, String userEmail) {
-        Post post = postRepository.findById(postId)
+    public CommentResponse createComment(Long articleId, CreateCommentRequest request, String userEmail) {
+        Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다"));
 
         User user = userRepository.findByEmail(userEmail)
@@ -35,7 +35,7 @@ public class CommentService {
 
         Comment comment = Comment.builder()
                 .content(request.content())
-                .post(post)
+                .article(article)
                 .author(user)
                 .build();
 
@@ -43,12 +43,12 @@ public class CommentService {
         return CommentResponse.from(savedComment);
     }
 
-    public List<CommentResponse> getCommentsByPost(Long postId) {
-        if (!postRepository.existsById(postId)) {
+    public List<CommentResponse> getCommentsByArticle(Long articleId) {
+        if (!articleRepository.existsById(articleId)) {
             throw new RuntimeException("게시글을 찾을 수 없습니다");
         }
 
-        return commentRepository.findByPostIdOrderByCreatedAtAsc(postId).stream()
+        return commentRepository.findByArticleIdOrderByCreatedAtAsc(articleId).stream()
                 .map(CommentResponse::from)
                 .collect(Collectors.toList());
     }

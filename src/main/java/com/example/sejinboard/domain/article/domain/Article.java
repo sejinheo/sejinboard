@@ -1,4 +1,4 @@
-package com.example.sejinboard.domain.post.domain;
+package com.example.sejinboard.domain.article.domain;
 
 import com.example.sejinboard.domain.user.domain.User;
 import com.example.sejinboard.global.entity.BaseEntity;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "posts")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Post extends BaseEntity {
+public class Article extends BaseEntity {
 
     @Column(nullable = false, length = 200)
     private String title;
@@ -28,7 +28,7 @@ public class Post extends BaseEntity {
     private Integer viewCount = 0;
 
     @Builder
-    public Post(String title, String content, User author) {
+    public Article(String title, String content, User author) {
         this.title = title;
         this.content = content;
         this.author = author;

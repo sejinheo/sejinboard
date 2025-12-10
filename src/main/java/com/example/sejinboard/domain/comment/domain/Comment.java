@@ -1,6 +1,6 @@
 package com.example.sejinboard.domain.comment.domain;
 
-import com.example.sejinboard.domain.post.domain.Post;
+import com.example.sejinboard.domain.article.domain.Article;
 import com.example.sejinboard.domain.user.domain.User;
 import com.example.sejinboard.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -20,16 +20,16 @@ public class Comment extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    private Article article;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User author;
 
     @Builder
-    public Comment(String content, Post post, User author) {
+    public Comment(String content, Article article, User author) {
         this.content = content;
-        this.post = post;
+        this.article = article;
         this.author = author;
     }
 

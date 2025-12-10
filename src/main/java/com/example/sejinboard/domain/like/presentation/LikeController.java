@@ -14,12 +14,12 @@ public class LikeController {
 
     private final LikeService likeService;
 
-    @PostMapping("/api/posts/{postId}/like")
-    public ResponseEntity<LikeResponse> togglePostLike(
-            @PathVariable Long postId,
+    @PostMapping("/api/articles/{articleId}/like")
+    public ResponseEntity<LikeResponse> toggleArticleLike(
+            @PathVariable Long articleId,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        LikeResponse response = likeService.togglePostLike(postId, userDetails.getUsername());
+        LikeResponse response = likeService.toggleArticleLike(articleId, userDetails.getUsername());
         return ResponseEntity.ok(response);
     }
 
@@ -32,9 +32,9 @@ public class LikeController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/api/posts/{postId}/like/count")
-    public ResponseEntity<Long> getPostLikeCount(@PathVariable Long postId) {
-        Long count = likeService.getPostLikeCount(postId);
+    @GetMapping("/api/articles/{articleId}/like/count")
+    public ResponseEntity<Long> getArticleLikeCount(@PathVariable Long articleId) {
+        Long count = likeService.getArticleLikeCount(articleId);
         return ResponseEntity.ok(count);
     }
 
