@@ -44,6 +44,16 @@ public class ArticleController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<ArticleCursorResponse> searchArticles(
+            @RequestParam String query,
+            @RequestParam(required = false) Long lastId,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        ArticleCursorResponse response = articleService.searchArticles(query, lastId, size);
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{articleId}")
     public ResponseEntity<ArticleResponse> updateArticle(
             @PathVariable Long articleId,
