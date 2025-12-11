@@ -28,3 +28,6 @@ jwt:
   refreshExpiration: 604800000
   header: ${JWT_HEADER:Authorization}
   prefix: ${JWT_PREFIX:Bearer}
+
+cors:
+  allowed-origins: "*"
