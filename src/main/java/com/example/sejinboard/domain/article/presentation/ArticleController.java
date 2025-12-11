@@ -2,15 +2,11 @@ package com.example.sejinboard.domain.article.presentation;
 
 import com.example.sejinboard.domain.article.application.dto.request.CreateArticleRequest;
 import com.example.sejinboard.domain.article.application.dto.request.UpdateArticleRequest;
-import com.example.sejinboard.domain.article.application.dto.response.ArticleListResponse;
+import com.example.sejinboard.domain.article.application.dto.response.ArticleCursorResponse;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleResponse;
 import com.example.sejinboard.domain.article.application.service.ArticleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,10 +36,11 @@ public class ArticleController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ArticleListResponse>> getAllArticles(
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    public ResponseEntity<ArticleCursorResponse> getAllArticles(
+            @RequestParam(required = false) Long lastId,
+            @RequestParam(defaultValue = "20") int size
     ) {
-        Page<ArticleListResponse> response = articleService.getAllArticles(pageable);
+        ArticleCursorResponse response = articleService.getArticles(lastId, size);
         return ResponseEntity.ok(response);
     }
 

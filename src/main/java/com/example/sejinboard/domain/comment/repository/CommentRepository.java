@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    List<Comment> findByArticleIdOrderByCreatedAtAsc(Long articleId);
+    List<Comment> findByArticleIdOrderByPathAsc(Long articleId);
+    boolean existsByParentId(Long parentId);
 }

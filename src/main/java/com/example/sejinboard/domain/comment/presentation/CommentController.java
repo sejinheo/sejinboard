@@ -44,7 +44,7 @@ public class CommentController {
             @Valid @RequestBody UpdateCommentRequest request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        CommentResponse response = commentService.updateComment(commentId, request, userDetails.getUsername());
+        CommentResponse response = commentService.updateComment(articleId, commentId, request, userDetails.getUsername());
         return ResponseEntity.ok(response);
     }
 
@@ -54,7 +54,7 @@ public class CommentController {
             @PathVariable Long commentId,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        commentService.deleteComment(commentId, userDetails.getUsername());
+        commentService.deleteComment(articleId, commentId, userDetails.getUsername());
         return ResponseEntity.noContent().build();
     }
 }

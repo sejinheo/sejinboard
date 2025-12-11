@@ -2,6 +2,7 @@ package com.example.sejinboard.domain.article.application.service;
 
 import com.example.sejinboard.domain.article.application.dto.request.CreateArticleRequest;
 import com.example.sejinboard.domain.article.application.dto.request.UpdateArticleRequest;
+import com.example.sejinboard.domain.article.application.dto.response.ArticleCursorResponse;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleListResponse;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleResponse;
 import com.example.sejinboard.domain.article.domain.Article;
@@ -9,10 +10,12 @@ import com.example.sejinboard.domain.article.repository.ArticleRepository;
 import com.example.sejinboard.domain.user.domain.User;
 import com.example.sejinboard.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,9 +49,28 @@ public class ArticleService {
         return ArticleResponse.from(article);
     }
 
-    public Page<ArticleListResponse> getAllArticles(Pageable pageable) {
-        return articleRepository.findAllByOrderByCreatedAtDesc(pageable)
-                .map(ArticleListResponse::from);
+    public ArticleCursorResponse getArticles(Long lastId, int size) {
+        int pageSize = Math.max(size, 1);
+        PageRequest pageRequest = PageRequest.of(0, pageSize + 1, Sort.by(Sort.Direction.DESC, "id"));
+
+        List<Article> articles = (lastId == null)
+                ? articleRepository.findAllByOrderByIdDesc(pageRequest)
+                : articleRepository.findByIdLessThanOrderByIdDesc(lastId, pageRequest);
+
+        boolean hasNext = articles.size() > pageSize;
+        if (hasNext) {
+            articles = articles.subList(0, pageSize);
+        }
+
+        Long nextCursor = hasNext && !articles.isEmpty()
+                ? articles.get(articles.size() - 1).getId()
+                : null;
+
+        List<ArticleListResponse> responses = articles.stream()
+                .map(ArticleListResponse::from)
+                .toList();
+
+        return ArticleCursorResponse.of(responses, nextCursor, hasNext);
     }
 
     @Transactional
