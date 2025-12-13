@@ -91,6 +91,16 @@ public class ArticleController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/top-viewed")
+    @Operation(summary = "조회수 순 게시글 조회", description = "조회수 내림차순(동점 시 ID 내림차순)으로 게시글을 페이지네이션하여 반환합니다.")
+    public ResponseEntity<List<ArticleListResponse>> getArticlesByViewCount(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        List<ArticleListResponse> response = articleService.getArticlesByViewCount(page, size);
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{articleId}")
     public ResponseEntity<ArticleResponse> updateArticle(
             @PathVariable Long articleId,

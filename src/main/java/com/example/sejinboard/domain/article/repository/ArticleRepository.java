@@ -55,6 +55,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
             Pageable pageable
     );
 
+    List<Article> findByOrderByViewCountDescIdDesc(Pageable pageable);
+
     @Query("""
             select new com.example.sejinboard.domain.article.application.dto.response.ArticleLikeRankResponse(
                 a.id,

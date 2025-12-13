@@ -156,6 +156,15 @@ public class ArticleService {
         return articleRepository.findTopByLikeCount(pageRequest);
     }
 
+    public List<ArticleListResponse> getArticlesByViewCount(int page, int size) {
+        int pageSize = Math.max(size, 1);
+        int pageIndex = Math.max(page, 0);
+        PageRequest pageRequest = PageRequest.of(pageIndex, pageSize, Sort.by(Sort.Direction.DESC, "viewCount").and(Sort.by(Sort.Direction.DESC, "id")));
+        return articleRepository.findByOrderByViewCountDescIdDesc(pageRequest).stream()
+                .map(ArticleListResponse::from)
+                .toList();
+    }
+
     @Transactional
     public ArticleResponse updateArticle(Long articleId, UpdateArticleRequest request, String userEmail) {
         Article article = articleRepository.findById(articleId)
