@@ -4,9 +4,11 @@ import com.example.sejinboard.domain.article.application.dto.request.CreateArtic
 import com.example.sejinboard.domain.article.application.dto.request.UpdateArticleRequest;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleCursorResponse;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleListResponse;
+import com.example.sejinboard.domain.article.application.dto.response.ArticleLikeRankResponse;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleResponse;
 import com.example.sejinboard.domain.article.domain.Article;
 import com.example.sejinboard.domain.article.repository.ArticleRepository;
+import com.example.sejinboard.domain.tag.repository.ArticleTagRepository;
 import com.example.sejinboard.domain.user.domain.User;
 import com.example.sejinboard.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
+    private final ArticleTagRepository articleTagRepository;
 
     @Transactional
     public ArticleResponse createArticle(CreateArticleRequest request, String userEmail) {
@@ -74,6 +77,28 @@ public class ArticleService {
         return ArticleCursorResponse.of(responses, nextCursor, hasNext);
     }
 
+    public ArticleCursorResponse getMyArticles(String userEmail, Long lastId, int size) {
+        int pageSize = Math.max(size, 1);
+        PageRequest pageRequest = PageRequest.of(0, pageSize + 1, Sort.by(Sort.Direction.DESC, "id"));
+
+        List<Article> articles = articleRepository.findMyArticles(userEmail, lastId, pageRequest);
+
+        boolean hasNext = articles.size() > pageSize;
+        if (hasNext) {
+            articles = articles.subList(0, pageSize);
+        }
+
+        Long nextCursor = hasNext && !articles.isEmpty()
+                ? articles.get(articles.size() - 1).getId()
+                : null;
+
+        List<ArticleListResponse> responses = articles.stream()
+                .map(ArticleListResponse::from)
+                .toList();
+
+        return ArticleCursorResponse.of(responses, nextCursor, hasNext);
+    }
+
     public ArticleCursorResponse searchArticles(String keyword, Long lastId, int size) {
         if (keyword == null || keyword.isBlank()) {
             throw new RuntimeException("검색어를 입력해주세요");
@@ -100,6 +125,12 @@ public class ArticleService {
         return ArticleCursorResponse.of(responses, nextCursor, hasNext);
     }
 
+    public List<ArticleLikeRankResponse> getArticlesByLikeCount(int size) {
+        int pageSize = Math.max(size, 1);
+        PageRequest pageRequest = PageRequest.of(0, pageSize);
+        return articleRepository.findTopByLikeCount(pageRequest);
+    }
+
     @Transactional
     public ArticleResponse updateArticle(Long articleId, UpdateArticleRequest request, String userEmail) {
         Article article = articleRepository.findById(articleId)
@@ -122,6 +153,7 @@ public class ArticleService {
             throw new RuntimeException("게시글 삭제 권한이 없습니다");
         }
 
+        articleTagRepository.deleteByArticleId(articleId);
         articleRepository.delete(article);
     }
 }
