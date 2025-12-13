@@ -30,6 +30,20 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     @Query("""
             select a from Article a
+            join ArticleLike al on al.article = a
+            where al.user.id = :userId
+              and (:lastId is null or a.id < :lastId)
+            group by a.id, a.title, a.content, a.thumbnailUrl, a.author.name, a.viewCount, a.createdAt, a.updatedAt
+            order by a.id desc
+            """)
+    List<Article> findLikedArticles(
+            @Param("userId") Long userId,
+            @Param("lastId") Long lastId,
+            Pageable pageable
+    );
+
+    @Query("""
+            select a from Article a
             where (lower(a.title) like lower(concat('%', :keyword, '%'))
                or lower(a.content) like lower(concat('%', :keyword, '%')))
               and (:lastId is null or a.id < :lastId)

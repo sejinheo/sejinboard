@@ -99,6 +99,31 @@ public class ArticleService {
         return ArticleCursorResponse.of(responses, nextCursor, hasNext);
     }
 
+    public ArticleCursorResponse getLikedArticles(String userEmail, Long lastId, int size) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+
+        int pageSize = Math.max(size, 1);
+        PageRequest pageRequest = PageRequest.of(0, pageSize + 1, Sort.by(Sort.Direction.DESC, "id"));
+
+        List<Article> articles = articleRepository.findLikedArticles(user.getId(), lastId, pageRequest);
+
+        boolean hasNext = articles.size() > pageSize;
+        if (hasNext) {
+            articles = articles.subList(0, pageSize);
+        }
+
+        Long nextCursor = hasNext && !articles.isEmpty()
+                ? articles.get(articles.size() - 1).getId()
+                : null;
+
+        List<ArticleListResponse> responses = articles.stream()
+                .map(ArticleListResponse::from)
+                .toList();
+
+        return ArticleCursorResponse.of(responses, nextCursor, hasNext);
+    }
+
     public ArticleCursorResponse searchArticles(String keyword, Long lastId, int size) {
         if (keyword == null || keyword.isBlank()) {
             throw new RuntimeException("검색어를 입력해주세요");

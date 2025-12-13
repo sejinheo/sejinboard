@@ -70,6 +70,17 @@ public class ArticleController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/me/liked")
+    @Operation(summary = "내가 좋아요한 게시글 조회", description = "로그인 사용자가 좋아요한 게시글을 최신순으로 조회합니다. cursor 기반(lastId) 페이지네이션 사용.")
+    public ResponseEntity<ArticleCursorResponse> getLikedArticles(
+            @RequestParam(required = false) Long lastId,
+            @RequestParam(defaultValue = "20") int size,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        ArticleCursorResponse response = articleService.getLikedArticles(userDetails.getUsername(), lastId, size);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/search")
     public ResponseEntity<ArticleCursorResponse> searchArticles(
             @RequestParam String query,
