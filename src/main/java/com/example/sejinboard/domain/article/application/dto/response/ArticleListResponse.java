@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 public record ArticleListResponse(
         Long id,
         String title,
+        String content,
+        String thumbnailUrl,
         String authorName,
         Integer viewCount,
         LocalDateTime createdAt
@@ -15,6 +17,8 @@ public record ArticleListResponse(
         return new ArticleListResponse(
                 article.getId(),
                 article.getTitle(),
+                article.getContent(),
+                article.getThumbnailUrl(),
                 article.getAuthor().getName(),
                 article.getViewCount(),
                 article.getCreatedAt()

@@ -20,6 +20,9 @@ public class Article extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Column(length = 500)
+    private String thumbnailUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User author;
@@ -28,16 +31,18 @@ public class Article extends BaseEntity {
     private Integer viewCount = 0;
 
     @Builder
-    public Article(String title, String content, User author) {
+    public Article(String title, String content, String thumbnailUrl, User author) {
         this.title = title;
         this.content = content;
+        this.thumbnailUrl = thumbnailUrl;
         this.author = author;
         this.viewCount = 0;
     }
 
-    public void update(String title, String content) {
+    public void update(String title, String content, String thumbnailUrl) {
         this.title = title;
         this.content = content;
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public void increaseViewCount() {

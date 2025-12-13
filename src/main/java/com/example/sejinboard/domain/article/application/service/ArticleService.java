@@ -33,6 +33,7 @@ public class ArticleService {
         Article article = Article.builder()
                 .title(request.title())
                 .content(request.content())
+                .thumbnailUrl(request.thumbnailUrl())
                 .author(user)
                 .build();
 
@@ -108,7 +109,7 @@ public class ArticleService {
             throw new RuntimeException("게시글 수정 권한이 없습니다");
         }
 
-        article.update(request.title(), request.content());
+        article.update(request.title(), request.content(), request.thumbnailUrl());
         return ArticleResponse.from(article);
     }
 

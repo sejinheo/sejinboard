@@ -9,6 +9,9 @@ public record CreateArticleRequest(
         String title,
 
         @NotBlank(message = "내용은 필수입니다")
-        String content
+        String content,
+
+        @Size(max = 500, message = "썸네일 URL은 500자를 초과할 수 없습니다")
+        String thumbnailUrl
 ) {
 }
