@@ -4,6 +4,7 @@ import com.example.sejinboard.domain.article.application.dto.request.CreateArtic
 import com.example.sejinboard.domain.article.application.dto.request.UpdateArticleRequest;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleCursorResponse;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleLikeRankResponse;
+import com.example.sejinboard.domain.article.application.dto.response.ArticleListResponse;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleResponse;
 import com.example.sejinboard.domain.article.application.service.ArticleService;
 import io.swagger.v3.oas.annotations.Operation;
