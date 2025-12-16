@@ -5,6 +5,7 @@ import com.example.sejinboard.domain.article.application.dto.request.UpdateArtic
 import com.example.sejinboard.domain.article.application.dto.response.ArticleCursorResponse;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleListResponse;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleLikeRankResponse;
+import com.example.sejinboard.domain.article.application.dto.response.ArticleOwnershipResponse;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleResponse;
 import com.example.sejinboard.domain.article.domain.Article;
 import com.example.sejinboard.domain.article.repository.ArticleRepository;
@@ -189,5 +190,13 @@ public class ArticleService {
 
         articleTagRepository.deleteByArticleId(articleId);
         articleRepository.delete(article);
+    }
+
+    public ArticleOwnershipResponse checkArticleOwnership(Long articleId, String userEmail) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다"));
+
+        boolean isOwner = article.getAuthor().getEmail().equals(userEmail);
+        return ArticleOwnershipResponse.of(isOwner);
     }
 }

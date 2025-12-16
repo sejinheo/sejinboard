@@ -5,6 +5,7 @@ import com.example.sejinboard.domain.article.application.dto.request.UpdateArtic
 import com.example.sejinboard.domain.article.application.dto.response.ArticleCursorResponse;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleLikeRankResponse;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleListResponse;
+import com.example.sejinboard.domain.article.application.dto.response.ArticleOwnershipResponse;
 import com.example.sejinboard.domain.article.application.dto.response.ArticleResponse;
 import com.example.sejinboard.domain.article.application.service.ArticleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -119,5 +120,15 @@ public class ArticleController {
     ) {
         articleService.deleteArticle(articleId, userDetails.getUsername());
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{articleId}/ownership")
+    @Operation(summary = "게시글 소유권 확인", description = "현재 로그인한 사용자가 해당 게시글의 작성자인지 확인합니다.")
+    public ResponseEntity<ArticleOwnershipResponse> checkArticleOwnership(
+            @PathVariable Long articleId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        ArticleOwnershipResponse response = articleService.checkArticleOwnership(articleId, userDetails.getUsername());
+        return ResponseEntity.ok(response);
     }
 }
