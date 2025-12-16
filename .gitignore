@@ -39,3 +39,7 @@ out/
 ### Environment Variables ###
 .env
 application-local.yaml
+
+### Docker Volumes ###
+mysql_data/
+redis_data/
